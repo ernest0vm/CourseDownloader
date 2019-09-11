@@ -13,14 +13,18 @@ namespace CourseDownloader
                 string courseName;
                 int courseNumber;
                 int maxVideoIndex;
-                
-                Console.WriteLine("Input the course name:");
+
+                Console.Title = "clubacademy.mx course downloader";
+                Console.WriteLine($"** Welcome to {Console.Title} **");
+                Console.WriteLine();
+
+                Console.WriteLine("Please input the course name:");
                 courseName = Console.ReadLine();
 
-                Console.WriteLine("Input the course index:");
+                Console.WriteLine("Please input the course index: (only numbers)");
                 courseNumber = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Input the max index:");
+                Console.WriteLine("Please input the max index: (only numbers)");
                 maxVideoIndex = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine();
 
