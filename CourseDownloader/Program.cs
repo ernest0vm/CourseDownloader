@@ -67,6 +67,8 @@ namespace CourseDownloader
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"An error ocurred: {ex.Message}.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
             }
         }
     }
