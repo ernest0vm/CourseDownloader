@@ -10,22 +10,12 @@ namespace CourseDownloader
         {
             try
             {
-                string courseName;
-                int courseNumber;
-                int maxVideoIndex;
+                string courseName = "Android Oreo y Kotlin";
+                int courseNumber = 35;
+                int maxVideoIndex = 140;
 
                 Console.Title = "clubacademy.mx course downloader";
                 Console.WriteLine($"** Welcome to {Console.Title} **");
-                Console.WriteLine();
-
-                Console.WriteLine("Please input the course name:");
-                courseName = Console.ReadLine();
-
-                Console.WriteLine("Please input the course index: (only numbers)");
-                courseNumber = Convert.ToInt32(Console.ReadLine());
-
-                Console.WriteLine("Please input the max index: (only numbers)");
-                maxVideoIndex = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine();
 
                 string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{courseName}";
