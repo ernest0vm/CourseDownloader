@@ -52,10 +52,18 @@ namespace CourseDownloader
 
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"Downloading: {source}");
-                    Client.DownloadFile(source, output);
 
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{output} Downloaded successful.");
+                    try
+                    {
+                        Client.DownloadFile(source, output);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{output} Downloaded successful.");
+                    }
+                    catch
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Cannot download: {output}");
+                    }
                 }
 
                 Console.ForegroundColor = ConsoleColor.White;
