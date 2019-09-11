@@ -12,50 +12,53 @@ namespace CourseDownloader
             {
                 string courseName;
                 int courseNumber;
-                int maxVideoIndex;
+                int maxCourseIndex = 100;
+                int maxVideoIndex = 200;
 
                 Console.Title = "clubacademy.mx course downloader";
                 Console.WriteLine($"** Welcome to {Console.Title} **");
                 Console.WriteLine();
 
-                Console.WriteLine("Please input the course name:");
-                courseName = Console.ReadLine();
-
-                Console.WriteLine("Please input the course index: (only numbers)");
-                courseNumber = Convert.ToInt32(Console.ReadLine());
-
-                Console.WriteLine("Please input the max index: (only numbers)");
-                maxVideoIndex = Convert.ToInt32(Console.ReadLine());
-                Console.WriteLine();
-
-                string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{courseName}";
-
                 WebClient Client = new WebClient();
+                
+                for (courseNumber = 1; courseNumber <= maxCourseIndex; courseNumber++) {
 
-                // check if exists a folder to save the course videos
-                if (!Directory.Exists(pathToSave))
-                {
-                    Directory.CreateDirectory(pathToSave);
-                }
+                    courseName = $"Course {courseNumber}";
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"Downloading {courseName}.");
+                    string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{Console.Title}\\{courseName}";
 
-                for (int a = 1; a <= maxVideoIndex; a++)
-                {
-                    string source = $"http://54.147.183.92/CFTP2019/V{courseNumber}_{a}.mp4";
-                    string output = pathToSave + $"\\V{courseNumber}_{a}.mp4";
-
-                    if (File.Exists(output))
+                    // check if exists a folder to save the course videos
+                    if (!Directory.Exists(pathToSave))
+                    {
+                        Directory.CreateDirectory(pathToSave);
+                    }
+                    else
                     {
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        Console.WriteLine($"{output} Already downloaded.");
+                        Console.WriteLine($"{courseName} Already downloaded.");
                         continue;
                     }
 
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"Downloading: {source}");
-                    Client.DownloadFile(source, output);
+                    for (int a = 1; a <= maxVideoIndex; a++)
+                    {
+                        string source = $"http://54.147.183.92/CFTP2019/V{courseNumber}_{a}.mp4";
+                        string output = pathToSave + $"\\V{courseNumber}_{a}.mp4";
 
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{output} Downloaded successful.");
+                        if (File.Exists(output))
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.WriteLine($"{output} Already downloaded.");
+                            continue;
+                        }
+
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($"Downloading: {source}");
+                        Client.DownloadFile(source, output);
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{output} Downloaded successful.");
+                    }
                 }
 
                 Console.ForegroundColor = ConsoleColor.White;
