@@ -53,6 +53,9 @@ namespace CourseIndexer
                     }
                 }
 
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Github table code:\n");
                 Console.WriteLine(tableCode);
 
             }
