@@ -13,8 +13,8 @@ namespace CourseIndexer
             try
             {
                 StringBuilder tableCode = new StringBuilder();
-                tableCode.Append("| Course Name | Course Index |\n");
-                tableCode.Append("| ----------- | ------------ |\n");
+                tableCode.Append("| Course Name | Category | Index |\n");
+                tableCode.Append("| ----------- | :------: | :---: |\n");
 
                 for (int courseIndex = 1; courseIndex <= 100; courseIndex++)
                 {
@@ -31,25 +31,27 @@ namespace CourseIndexer
                             string html = reader.ReadToEnd();
 
                             var getTitle = Regex.Match(html, "<h1.*class=.entry-title.*[^>](.*)</h1>").Groups[1];
+                            var getCategory = Regex.Match(html, "<div.*class=.author-name.*(<\\s*a[^>]*>(.*?)<\\s*/\\s*a>)</div>");
                             //var title = Regex.Replace(getTitle.ToString(),"\\s{32}", string.Empty);
                             var title = getTitle.ToString().Trim();
+                            var category = getCategory.Groups[2];
 
-                            if (getTitle.ToString() == string.Empty)
+                                if (getTitle.ToString() == string.Empty)
                             {
                                 throw new Exception("The course don't exist!");
                             }
 
-                            tableCode.Append($"| <a href=\"{url}\" target=\"_blank\">{title}</a> | {courseIndex} |\n");
+                            tableCode.Append($"| <a href=\"{url}\" target=\"_blank\">{title}</a> | {category} | {courseIndex} |\n");
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Url: {url}, Title: {title}, Index: {courseIndex}");  
+                            Console.WriteLine($"Url: {url}, Title: {title}, Index: {courseIndex}, Category: {category}");  
                         }
                     }
                     catch (Exception e)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Error while read the web: {url}. {e.Message}");
-                        tableCode.Append($"| {e.Message} | {courseIndex} |\n");
+                        tableCode.Append($"| {e.Message} | no category! | {courseIndex} |\n");
                     }
                 }
 
