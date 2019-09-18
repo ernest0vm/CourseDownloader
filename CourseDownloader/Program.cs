@@ -8,30 +8,39 @@ namespace CourseDownloader
 {
     class Program
     {
+        private static readonly string[] illegalChars = { "<", ">", ":", "\"", "/", "\\", "|", "¿", "?", "*" };
+        private static string CourseName { get; set; } = string.Empty;
+
         static void Main(string[] args)
         {
             try
             {
                 List<string> videoNames = new List<string>();
-                string courseName;
                 int courseNumber;
                 int maxVideoIndex;
 
                 Console.Title = "clubacademy.mx course downloader";
                 Console.WriteLine($"** Welcome to {Console.Title} **");
                 Console.WriteLine();
-
-                Console.WriteLine("Please input the course name:");
-                courseName = Console.ReadLine();
-                Console.WriteLine();
-
+                
                 Console.WriteLine("Please input the course index: (only numbers)");
-                courseNumber = Convert.ToInt32(Console.ReadLine());
-
+                courseNumber = ValidateNumber(Console.ReadLine());
                 videoNames = GetVideos(courseNumber);
                 maxVideoIndex = Convert.ToInt32(videoNames.Count);
 
-                string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{courseName}";
+                Console.WriteLine($"I found the following title for the course '{CourseName}', you want to keep it [y / n] default: no");
+                if (Console.ReadKey().Key != ConsoleKey.Y )
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"\nPlease input the course name: (don't use {string.Join(" ", illegalChars)})");
+                    CourseName = ValidateString(Console.ReadLine());
+                    
+                }
+
+                Console.WriteLine();
+                string pathToSave = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{CourseName}";
+                Console.WriteLine($"All videos are stored in '{pathToSave}'");
+                Console.WriteLine();
 
                 WebClient Client = new WebClient();
 
@@ -63,7 +72,7 @@ namespace CourseDownloader
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"{output} Downloaded successful.");
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Cannot download: {output}");
@@ -75,6 +84,8 @@ namespace CourseDownloader
                 Console.WriteLine();
                 Console.WriteLine("All videos has been downloaded successful, press any key to exit.");
                 Console.ReadLine();
+
+                Client.Dispose();
             }
             catch (Exception ex)
             {
@@ -103,17 +114,35 @@ namespace CourseDownloader
                     {
                         string html = reader.ReadToEnd();
 
+                        var getTitle = Regex.Match(html, "<h1.*class=.entry-title.*[^>](.*)</h1>").Groups[1];
                         var getVideos = Regex.Matches(html, "<span.*class=.lecture-title.*>(.*?)</span>");
+
+                        CourseName = ValidateString(getTitle.ToString().Trim());
 
                         foreach (Match item in getVideos)
                         {
                             if (item.Groups.Count > 0)
-                                videoList.Add(item.Groups[1].ToString().Trim());
+                            {
+                                videoList.Add(ValidateString(item.Groups[1].ToString().Trim()));
+                            }
                         }
 
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine();
-                        Console.WriteLine("Video list obtained correctly!");
+                        if(videoList.Count > 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine();
+                            Console.WriteLine($"{videoList.Count} videos found in the course!");
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine();
+                            Console.WriteLine($"Video list contains no values, please check the course index.");
+                            Console.WriteLine("Press any key to exit.");
+                            Console.ReadLine();
+                            Environment.Exit(0);
+                        }
+                        
                     }
                 }
                 catch (Exception e)
@@ -134,6 +163,48 @@ namespace CourseDownloader
             }
 
             return videoList;
+        }
+
+        private static string ValidateString(string data)
+        {
+            foreach (var illegalChar in illegalChars)
+            {
+                if (data.Contains(illegalChar))
+                {
+                    switch (illegalChar)
+                    {
+                        case "\"":
+                            data = new string(data.Replace(illegalChar, "'"));
+                            break;
+                        case ":":
+                            data = new string(data.Replace(illegalChar, " -"));
+                            break;
+                        default:
+                            data = new string(data.Replace(illegalChar, string.Empty));
+                            break;
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        private static int ValidateNumber(string data)
+        {
+            var getData = Regex.Match(data, "[0-9]+").Groups[0];
+            var isNumber = Regex.IsMatch(getData.ToString(), "[0-9]+");
+
+            if (isNumber)
+            {
+                return Convert.ToInt32(getData.Value);
+            }
+            else
+            {
+                Console.WriteLine("Please input the course index: (only numbers)");
+                var newNumber = ValidateNumber(Console.ReadLine());
+                Console.WriteLine();
+                return newNumber;
+            }
         }
     }
 }
