@@ -13,8 +13,8 @@ namespace CourseIndexer
             try
             {
                 StringBuilder tableCode = new StringBuilder();
-                tableCode.Append("| Course Name | Category | Index |\n");
-                tableCode.Append("| ----------- | :------: | :---: |\n");
+                tableCode.Append("| Index | Course Name | Time  | Category |\n");
+                tableCode.Append("| :---: | ----------- | :---: | :------: |\n");
 
                 for (int courseIndex = 1; courseIndex <= 100; courseIndex++)
                 {
@@ -32,26 +32,29 @@ namespace CourseIndexer
 
                             var getTitle = Regex.Match(html, "<h1.*class=.entry-title.*[^>](.*)</h1>").Groups[1];
                             var getCategory = Regex.Match(html, "<div.*class=.author-name.*(<\\s*a[^>]*>(.*?)<\\s*/\\s*a>)</div>");
+                            var getTime = Regex.Match(html, "<div.*class=.total-lectures-time.*>(.*?)</div>");
+
                             //var title = Regex.Replace(getTitle.ToString(),"\\s{32}", string.Empty);
                             var title = getTitle.ToString().Trim();
                             var category = getCategory.Groups[2];
+                            var time = getTime.Groups[1];
 
                                 if (getTitle.ToString() == string.Empty)
                             {
                                 throw new Exception("The course don't exist!");
                             }
 
-                            tableCode.Append($"| <a href=\"{url}\" target=\"_blank\">{title}</a> | {category} | {courseIndex} |\n");
+                            tableCode.Append($"| {courseIndex} | <a href=\"{url}\" target=\"_blank\">{title}</a> | {time} | {category} |\n");
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Url: {url}, Title: {title}, Index: {courseIndex}, Category: {category}");  
+                            Console.WriteLine($"Url: {url}, Title: {title}, Index: {courseIndex}, Category: {category}, Time: {time}");  
                         }
                     }
                     catch (Exception e)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Error while read the web: {url}. {e.Message}");
-                        tableCode.Append($"| {e.Message} | no category! | {courseIndex} |\n");
+                        tableCode.Append($"| {courseIndex} | {e.Message} | no time! | no category! |\n");
                     }
                 }
 
